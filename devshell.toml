@@ -1,6 +1,6 @@
 [devshell]
 name = "dev"
 packages = [
-    "python38",
+    "python37",
     "nodePackages.pyright",
 ]

@@ -6,6 +6,6 @@ setuptools.setup(
     version = "0.0.1",
     author = "Aza Maulana",
     author_email = "azamaulanaaa@gmail.com",
-    python_requires = '>=3.8, <4',
+    python_requires = '>=3.7, <4',
     packages = ["src/pyunduh"],
 )

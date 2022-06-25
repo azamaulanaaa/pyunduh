@@ -1,7 +1,7 @@
 import unittest
 from pyunduh import zippyshare
 
-class TestDefault(unittest.TestCase):
+class test_zippyshare(unittest.TestCase):
     def test_urlValidator(self):
         pairs = [
             (["https://raw.githubusercontent.com/azamaulanaaa/dotfiles/main/neovim/setup.sh"], False),

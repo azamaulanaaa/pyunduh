@@ -1,7 +1,7 @@
 import unittest
 from pyunduh import default
 
-class Testdefault(unittest.TestCase):
+class test_default(unittest.TestCase):
     def test_Default(self):
         pairs = [
             (["https://raw.githubusercontent.com/azamaulanaaa/dotfiles/main/neovim/setup.sh"], '#!/bin/bas'),

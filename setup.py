@@ -1,0 +1,11 @@
+import setuptools
+
+setuptools.setup(
+    name = "pyunduh",
+    description = "a simple python downloader package",
+    version = "0.0.1",
+    author = "Aza Maulana",
+    author_email = "azamaulanaaa@gmail.com",
+    python_requires = '>=3.8, <4',
+    packages = ["src/pyunduh"],
+)

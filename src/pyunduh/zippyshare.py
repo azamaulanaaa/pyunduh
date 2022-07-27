@@ -34,12 +34,15 @@ def getKeyAndCookies(url: str) -> Tuple[int, str]:
         cookies = res.headers.get_all("Set-Cookie")
         content = b''.join(res.readlines()).decode('utf-8')
     
-    pattern = re.compile(r"([\d]+)\s\+\s([\d]+)\s\%\s([\d]+)\)")
+    pattern = re.compile(r"id=\"omg\"[\s]+class=\"([\d]+)\"|([\d]+)%1000")
     matches = pattern.findall(content)
     if len(matches) == 0:
         raise Exception(errMsg["FetchKey"])
     
-    key =  (int(matches[0][1]) % int(matches[0][0])) + (int(matches[0][1]) % int(matches[0][2]))
+    key_base = int(matches[1][1])
+    key_constant = 7
+    key_omg = int(matches[0][0])
+    key = key_base % 1000 + key_constant + (key_omg * 2)
     return (key, cookies)
   
 def getServerCode(url: str) -> str:

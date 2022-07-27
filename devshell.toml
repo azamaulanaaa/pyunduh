@@ -2,5 +2,31 @@
 name = "dev"
 packages = [
     "python37",
-    "nodePackages.pyright",
+    "nodePackages.pyright"
 ]
+
+[devshell.startup.venv]
+text = "[ -f \".venv\" ] || python -m venv .venv"
+
+[devshell.interactive.venv]
+text = "source .venv/bin/activate"
+
+[[commands]]
+name = "update"
+help = "install and update package based on `requirements.txt`"
+command = "[ -f \"requirements.txt\" ] && pip install -r requirements.txt"
+
+[[commands]]
+name = "freeze"
+help = "save package list to `requirements.txt`"
+command = "pip freeze > requirements.txt"
+
+[[commands]]
+name = "build"
+help = "build wheel to `dist` dir"
+command = "python setup.py bdist_wheel"
+
+[[commands]]
+name = "restart"
+help = "restart environment"
+command = "exit & nix develop"

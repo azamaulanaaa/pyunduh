@@ -9,6 +9,16 @@ errMsg = {
     "FetchFileCode": "unable to fetch file code",
 }
 
+configs = [
+    (
+        r"id=\"omg\"[\s]+class=\"([\d]+)\"|([\d]+)%1000",
+        lambda x: int(x[1][1]) % 1000 + 7 + int(x[0][0]) * 2,
+    ), (
+        r"([\d]+)\s\+\s([\d]+)\s\%\s([\d]+)\)",
+        lambda x: int(x[0][1]) % int(x[0][0]) + int(x[0][1]) % int(x[0][2]),
+    ),
+]
+
 def Zippyshare(url: str):
     params = getParams(url)
     req = request.Request(**params)
@@ -25,25 +35,24 @@ def validateUrl(url: str) -> bool:
     pattern = re.compile(r"(http(s)?\:\/\/)?www[\d]+\.zippyshare\.com\/v\/[\w\d]+\/file\.html")
     return pattern.match(url) != None
 
-def getKeyAndCookies(url: str) -> Tuple[int, str]:
+def getKey(url: str) -> int:
     headers = getDefaultHeader()
     headers["Accept-Encoding"] = "identity"
 
     req = request.Request(url, method = "GET", headers = headers)
     with request.urlopen(req) as res:
-        cookies = res.headers.get_all("Set-Cookie")
         content = b''.join(res.readlines()).decode('utf-8')
-    
-    pattern = re.compile(r"id=\"omg\"[\s]+class=\"([\d]+)\"|([\d]+)%1000")
-    matches = pattern.findall(content)
-    if len(matches) == 0:
+
+    key = None
+    for config in configs:
+        matches = re.findall(config[0], content)
+        if len(matches) != 0:
+            key = config[1](matches)
+            break
+
+    if key == None:
         raise Exception(errMsg["FetchKey"])
-    
-    key_base = int(matches[1][1])
-    key_constant = 7
-    key_omg = int(matches[0][0])
-    key = key_base % 1000 + key_constant + (key_omg * 2)
-    return (key, cookies)
+    return key
   
 def getServerCode(url: str) -> str:
     pattern = re.compile(r'www([\d]+)')
@@ -69,15 +78,14 @@ def getParams(url: str) -> dict:
     if validateUrl(url) == False:
         raise ValueError(errMsg["Url"])
 
-    (keys, cookies) = getKeyAndCookies(url)
+    key = getKey(url)
     serverCode = getServerCode(url)
     fileCode = getFileCode(url)
 
     headers = getDefaultHeader()
-    headers["Cookie"] = "; ".join([x.split(";")[0] for x in cookies])
     params = {
         "method": "GET",
-        "url": "https://www{}.zippyshare.com/d/{}/{}/file".format(serverCode, fileCode, keys),
+        "url": "https://www{}.zippyshare.com/d/{}/{}/file".format(serverCode, fileCode, key),
         "headers": headers,
     }
 

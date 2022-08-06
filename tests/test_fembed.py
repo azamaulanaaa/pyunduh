@@ -33,4 +33,3 @@ class test_fembed(unittest.TestCase):
             res = fembed.Fembed(*pair[0])
             content = res.read(10).decode("utf-8")
             self.assertEqual(content, pair[1])
-

@@ -11,6 +11,3 @@ class test_default(unittest.TestCase):
             res = default.Default(*pair[0])
             content = res.read(10).decode("utf-8")
             self.assertEqual(content, pair[1])
-
-
-

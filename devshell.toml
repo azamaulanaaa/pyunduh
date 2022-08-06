@@ -30,3 +30,8 @@ command = "python setup.py bdist_wheel"
 name = "restart"
 help = "restart environment"
 command = "exit & nix develop"
+
+[[commands]]
+name = "pytest"
+help = "run package testing"
+command = "python -m pytest"

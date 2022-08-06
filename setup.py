@@ -9,4 +9,9 @@ setuptools.setup(
     python_requires = '>=3.7, <4',
     packages = setuptools.find_packages("src"),
     package_dir = {"": "src"},
+    extras_require = {
+        "dev": [
+            "pytest",
+        ],
+    },
 )

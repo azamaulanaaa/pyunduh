@@ -1,22 +1,15 @@
 import re
+import os
 from urllib import request
+from bs4 import BeautifulSoup
+import js2py
 
 errMsg = {
     "Url": "url does not supported",
-    "FetchKey": "unable to fetch Key",
+    "Path": "unable to fetch path",
     "FetchServerCode": "unable to fetch server code",
     "FetchFileCode": "unable to fetch file code",
 }
-
-configs = [
-    (
-        r"id=\"omg\"[\s]+class=\"([\d]+)\"|([\d]+)%1000",
-        lambda x: int(x[1][1]) % 1000 + 7 + int(x[0][0]) * 2,
-    ), (
-        r"([\d]+)\s\+\s([\d]+)\s\%\s([\d]+)\)",
-        lambda x: int(x[0][1]) % int(x[0][0]) + int(x[0][1]) % int(x[0][2]),
-    ),
-]
 
 def Zippyshare(url: str):
     params = getParams(url)
@@ -34,24 +27,39 @@ def validateUrl(url: str) -> bool:
     pattern = re.compile(r"(http(s)?\:\/\/)?www[\d]+\.zippyshare\.com\/v\/[\w\d]+\/file\.html")
     return pattern.match(url) != None
 
-def getKey(url: str) -> int:
+def getPath(url: str) -> str:
+
     headers = getDefaultHeader()
     headers["Accept-Encoding"] = "identity"
 
     req = request.Request(url, method = "GET", headers = headers)
     with request.urlopen(req) as res:
         content = b''.join(res.readlines()).decode('utf-8')
-
-    key = None
-    for config in configs:
-        matches = re.findall(config[0], content)
-        if len(matches) != 0:
-            key = config[1](matches)
+        soup = BeautifulSoup(content, "html.parser")
+    
+    scripts = soup.select("script")
+    jsscript = None
+    for script in scripts:
+        if script.get_text().__contains__("dlbutton"):
+            jsscript = script.get_text()
             break
+    if jsscript == None:
+        raise Exception(errMsg["Path"])
 
-    if key == None:
-        raise Exception(errMsg["FetchKey"])
-    return key
+    vm = js2py.EvalJs()
+
+    mod_dir = os.path.dirname(os.path.realpath(__file__))
+    stub = os.path.join(mod_dir, "stub.js")
+    with open(stub) as f:
+        vm.execute(f.read())
+
+    vm.execute(jsscript)
+
+    path = vm.document.dlbutton.href
+    if path == None:
+        raise Exception(errMsg["Path"])
+
+    return path
   
 def getServerCode(url: str) -> str:
     pattern = re.compile(r'www([\d]+)')
@@ -63,28 +71,17 @@ def getServerCode(url: str) -> str:
     serverCode = matches[0]
     return serverCode
 
-def getFileCode(url: str) -> str:
-    pattern = re.compile(r'v\/([\w\d]+)\/')
-
-    match = pattern.findall(url)
-    if len(match) == 0:
-        raise Exception(errMsg["FechFileCode"])
-
-    fileCode = match[0]
-    return fileCode
-
 def getParams(url: str) -> dict:
     if validateUrl(url) == False:
         raise ValueError(errMsg["Url"])
 
-    key = getKey(url)
     serverCode = getServerCode(url)
-    fileCode = getFileCode(url)
+    path = getPath(url)
 
     headers = getDefaultHeader()
     params = {
         "method": "GET",
-        "url": "https://www{}.zippyshare.com/d/{}/{}/file".format(serverCode, fileCode, key),
+        "url": "https://www{}.zippyshare.com{}".format(serverCode, path),
         "headers": headers,
     }
 

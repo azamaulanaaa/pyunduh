@@ -21,15 +21,6 @@ class test_zippyshare(unittest.TestCase):
             result = zippyshare.getServerCode(*pair[0])
             self.assertEqual(result, pair[1])
 
-    def test_getFileCode(self):
-        pairs = [
-            (["https://www116.zippyshare.com/v/2WTfd7xd/file.html"], '2WTfd7xd'),
-        ]
-
-        for pair in pairs:
-            result = zippyshare.getFileCode(*pair[0])
-            self.assertEqual(result, pair[1])
-
     def test_Zippyshare(self):
         pairs = [
             (["https://www116.zippyshare.com/v/2WTfd7xd/file.html"], 'id,name,la'),

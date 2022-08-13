@@ -1,5 +1,4 @@
 import re
-import os
 from urllib import request
 from bs4 import BeautifulSoup
 import js2py
@@ -47,12 +46,17 @@ def getPath(url: str) -> str:
         raise Exception(errMsg["Path"])
 
     vm = js2py.EvalJs()
-
-    mod_dir = os.path.dirname(os.path.realpath(__file__))
-    stub = os.path.join(mod_dir, "stub.js")
-    with open(stub) as f:
-        vm.execute(f.read())
-
+    vm.execute('''
+    const document = {
+        getElementById(v) {
+            if (!this[v]) {
+                this[v] = {}
+            }
+            
+            return this[v]
+        }
+    }
+    ''')
     vm.execute(jsscript)
 
     path = vm.document.dlbutton.href

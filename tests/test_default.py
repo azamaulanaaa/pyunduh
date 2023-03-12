@@ -4,7 +4,7 @@ from pyunduh import default
 class test_default(unittest.TestCase):
     def test_Default(self):
         pairs = [
-            (["https://raw.githubusercontent.com/azamaulanaaa/dotfiles/main/neovim/setup.sh"], '#!/bin/bas'),
+            (["https://github.com/azamaulanaaa/pyunduh/raw/master/setup.py"], 'import set'),
         ]
 
         for pair in pairs:

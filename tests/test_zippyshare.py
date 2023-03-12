@@ -23,7 +23,7 @@ class test_zippyshare(unittest.TestCase):
 
     def test_Zippyshare(self):
         pairs = [
-            (["https://www116.zippyshare.com/v/2WTfd7xd/file.html"], 'id,name,la'),
+            (["https://www88.zippyshare.com/v/rvB4pUv2/file.html"], '          '),
         ]
         
         for pair in pairs:

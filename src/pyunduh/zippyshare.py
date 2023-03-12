@@ -36,17 +36,19 @@ def getPath(url: str) -> str:
         content = b''.join(res.readlines()).decode('utf-8')
         soup = BeautifulSoup(content, "html.parser")
     
-    scripts = soup.select("script")
-    jsscript = None
-    for script in scripts:
-        if script.get_text().__contains__("dlbutton"):
-            jsscript = script.get_text()
-            break
-    if jsscript == None:
+    dlbutton_a = soup.select_one("#dlbutton")
+    if dlbutton_a == None:
         raise Exception(errMsg["Path"])
+    
+    parent = dlbutton_a.parent
+    if parent == None:
+        raise Exception(errMsg["Path"])
+
+    scripts = parent.select("script")
 
     vm = js2py.EvalJs()
     vm.execute('''
+    function somffunction() {}
     const document = {
         getElementById(v) {
             if (!this[v]) {
@@ -57,12 +59,13 @@ def getPath(url: str) -> str:
         }
     }
     ''')
-    vm.execute(jsscript)
+    for script in scripts:
+        vm.execute(script.get_text())
 
     path = vm.document.dlbutton.href
     if path == None:
         raise Exception(errMsg["Path"])
-
+    
     return path
   
 def getServerCode(url: str) -> str:

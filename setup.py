@@ -6,7 +6,7 @@ setuptools.setup(
     version = "0.0.4",
     author = "Aza Maulana",
     author_email = "azamaulanaaa@gmail.com",
-    python_requires = '>=3.7, <=3.11',
+    python_requires = '>=3.7, < 3.12',
     packages = setuptools.find_packages("src"),
     package_dir = {"": "src"},
     install_requires = [
